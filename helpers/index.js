@@ -1,4 +1,7 @@
 const winston = require("winston");
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
+const { JWT_SECRET } = require("../config")
 
 // Winston logger setup
 const logger = winston.createLogger({
@@ -13,5 +16,32 @@ const logger = winston.createLogger({
   ]
 });
 
+//create JWT token 
+const generateJwtToken = (paylaod, expIn) => {
+  const token = jwt.sign(paylaod, JWT_SECRET, {
+    expiresIn: expIn
+  })
+  return token
+}
 
-module.exports = { logger }
+//verify token 
+const decodeJwtToken = (paylaod) => {
+  const token = jwt.verify(paylaod, JWT_SECRET)
+  return token
+}
+
+//bcrypt the password 
+const hashPassword = async (password) => {
+  return await bcrypt.hash(password, 8)
+}
+
+//compare password 
+const comparePassword = async (password, hPassword) => {
+  try {
+    return await bcrypt.compare(password, hPassword)
+  } catch (error) {
+    return false
+  }
+}
+
+module.exports = { logger, generateJwtToken, decodeJwtToken, hashPassword, comparePassword }

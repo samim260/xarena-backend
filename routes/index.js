@@ -8,5 +8,6 @@ router.get('/health', (req, res) => {
         timestamp: Date.now()
     })
 })
+router.use("/user", require("./user"))
 
 module.exports = router
