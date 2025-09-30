@@ -56,8 +56,8 @@ class User {
                 return res.status(400).json({ success: false, error: true, message: "User do not exists" });
             }
 
-            const accessToken = generateJwtToken({ id: user.id, username: user.username }, '1d')
-            const refreshToken = generateJwtToken({ id: user.id, username: user.username }, '100d')
+            const accessToken = generateJwtToken({ id: user.id, username: user.username, role: user.role }, '1d')
+            const refreshToken = generateJwtToken({ id: user.id, username: user.username, role: user.role }, '100d')
 
             user.refreshToken = refreshToken
             await user.save()
@@ -65,7 +65,7 @@ class User {
             user.accessToken = accessToken
             user.password = null;
 
-            res.json({ success: true, error: false, message: "login successful", data: {...user.toJSON(), accessToken} })
+            res.json({ success: true, error: false, message: "login successful", data: { ...user.toJSON(), accessToken } })
 
 
         } catch (error) {

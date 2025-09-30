@@ -29,6 +29,10 @@ const schema = new mongoose.Schema({
         type: Number,
         default: 0,
         min: 0
+    },
+    role: {
+        type : String,
+        default : 'user'
     }
 }, {
     versionKey: false,
