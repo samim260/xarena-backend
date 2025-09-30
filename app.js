@@ -3,6 +3,7 @@ const helmet = require('helmet')
 const cors = require("cors")
 const { rateLimit }  =  require('express-rate-limit')
 const morgan = require("morgan")
+const cookieParser = require("cookie-parser");
 const app = express()
 const connectDatabase = require("./config/database")
 
@@ -22,7 +23,8 @@ app.use(helmet())
 //http logger
 app.use(morgan('common'))
 
-// json middlewares
+// json & cookie middlewares
+app.use(cookieParser());
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 

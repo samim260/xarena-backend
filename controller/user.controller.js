@@ -1,5 +1,7 @@
-const { logger, generateJwtToken, hashPassword, comparePassword } = require("../helpers")
+const { logger, generateJwtToken, hashPassword, comparePassword, sendMail } = require("../helpers")
 const { signUpSchema, loginSchema } = require("../validations/user.validation")
+const { VerificationMail } = require("../helpers/mailTemplate")
+const crypto = require("crypto");
 const UserModel = require("../models/User")
 
 
@@ -22,15 +24,42 @@ class User {
 
             //hash password and create user
             const hashPasword = await hashPassword(req.body.password)
+            const otp = crypto.randomInt(100000, 999999).toString();
             const user = await UserModel.create({
                 username: req.body.username,
                 email: req.body.email,
                 balance: 0,
-                password: hashPasword
+                password: hashPasword,
+                otp: {
+                    code: otp,
+                    expiry: Date.now() + (5 * 60 * 1000)
+                }
             })
 
 
-            return res.json({ success: true, error: false, data: user })
+            const accessToken = generateJwtToken({ id: user.id, username: user.username, role: user.role }, '1d')
+            const refreshToken = generateJwtToken({ id: user.id, username: user.username, role: user.role }, '100d')
+
+            user.refreshToken = refreshToken
+            await user.save()
+
+
+            //send mail
+            const mailBody = VerificationMail(user.username, user.otp.code)
+            await sendMail(user.email, "Welcome to Earena! Please Confirm Your Email", mailBody)
+
+            return res.cookie("token", accessToken, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000
+            }).json({
+                success: true, error: false, data: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }
+            })
         } catch (error) {
             logger.error("error ", error.message)
             return res.json({ success: false, error: true, message: error.message })
@@ -62,16 +91,39 @@ class User {
             user.refreshToken = refreshToken
             await user.save()
 
-            user.accessToken = accessToken
-            user.password = null;
-
-            res.json({ success: true, error: false, message: "login successful", data: { ...user.toJSON(), accessToken } })
+            return res.cookie("token", accessToken, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000
+            }).json({
+                success: true, error: false, data: {
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }
+            })
 
 
         } catch (error) {
             logger.error("error ", error.message)
             return res.json({ success: false, error: true, message: error.message })
         }
+    }
+
+    async verifyOtp(req, res) {
+        const {otp} = req.body
+        if(!otp){
+            return res.status(400).json({ success: false, error: true, message: "please send otp" });
+        }
+        const user = await UserModel.findById(req.user.id)
+        if(user.otp.code != otp || user.otp.expiry < Date.now()){
+            return res.status(400).json({ success: false, error: true, message: "invaild or expired otp" });
+        }
+        user.isVerified = true
+        user.isActive = true
+        user.save();
+        return res.json({success: true, error: false})
     }
 }
 

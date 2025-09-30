@@ -31,8 +31,24 @@ const schema = new mongoose.Schema({
         min: 0
     },
     role: {
-        type : String,
-        default : 'user'
+        type: String,
+        default: 'user'
+    },
+    otp : {
+        code : {
+            type : Number
+        },
+        expiry : {
+            type : Number
+        }
+    },
+    isActive: {
+        type: Boolean,
+        default: false
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 }, {
     versionKey: false,

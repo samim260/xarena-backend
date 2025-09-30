@@ -1,7 +1,8 @@
 const winston = require("winston");
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
-const { JWT_SECRET } = require("../config")
+const nodemailer = require("nodemailer")
+const { JWT_SECRET, GOOGLE_APP_PASSWORD, GOOGLE_MAIL } = require("../config")
 
 // Winston logger setup
 const logger = winston.createLogger({
@@ -25,9 +26,9 @@ const generateJwtToken = (paylaod, expIn) => {
 }
 
 //verify token 
-const decodeJwtToken = (paylaod) => {
-  const token = jwt.verify(paylaod, JWT_SECRET)
-  return token
+const decodeJwtToken = (token) => {
+  const data = jwt.verify(token, JWT_SECRET)
+  return data
 }
 
 //bcrypt the password 
@@ -44,4 +45,24 @@ const comparePassword = async (password, hPassword) => {
   }
 }
 
-module.exports = { logger, generateJwtToken, decodeJwtToken, hashPassword, comparePassword }
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: GOOGLE_MAIL,
+    pass: GOOGLE_APP_PASSWORD,
+  },
+});
+
+//send Mail
+const sendMail = async (to,subject,html) => {
+  const mailOptions = {
+    from: `"Earena" <${GOOGLE_MAIL}>`,
+    to: to,
+    subject: subject,
+    text : "",
+    html: html, 
+  }
+  const mail = await transporter.sendMail(mailOptions)
+}
+
+module.exports = { logger, generateJwtToken, decodeJwtToken, hashPassword, comparePassword, sendMail }
