@@ -62,7 +62,7 @@ class User {
             })
         } catch (error) {
             logger.error("error ", error.message)
-            return res.json({ success: false, error: true, message: error.message })
+            return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
 
@@ -107,23 +107,28 @@ class User {
 
         } catch (error) {
             logger.error("error ", error.message)
-            return res.json({ success: false, error: true, message: error.message })
+            return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
 
     async verifyOtp(req, res) {
-        const {otp} = req.body
-        if(!otp){
-            return res.status(400).json({ success: false, error: true, message: "please send otp" });
+        try {
+            const { otp } = req.body
+            if (!otp) {
+                return res.status(400).json({ success: false, error: true, message: "please send otp" });
+            }
+            const user = await UserModel.findById(req.user.id)
+            if (user.otp.code != otp || user.otp.expiry < Date.now()) {
+                return res.status(400).json({ success: false, error: true, message: "invaild or expired otp" });
+            }
+            user.isVerified = true
+            user.isActive = true
+            user.save();
+            return res.json({ success: true, error: false })
+        } catch (error) {
+            logger.error("error ", error.message)
+            return res.status(500).json({ success: false, error: true, message: error.message })
         }
-        const user = await UserModel.findById(req.user.id)
-        if(user.otp.code != otp || user.otp.expiry < Date.now()){
-            return res.status(400).json({ success: false, error: true, message: "invaild or expired otp" });
-        }
-        user.isVerified = true
-        user.isActive = true
-        user.save();
-        return res.json({success: true, error: false})
     }
 }
 
