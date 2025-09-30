@@ -32,6 +32,10 @@ app.use(express.urlencoded({ extended: true }));
 //routers
 app.use("/api",require("./routes"))
 
+app.get("/", (req, res) => {
+  res.send("welcome to Xarena Apis");
+});
+
 connectDatabase()
 
 
