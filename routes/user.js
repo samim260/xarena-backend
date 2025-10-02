@@ -7,5 +7,7 @@ const auth = new User()
 router.post("/signup", auth.signUp)
 router.post("/login", auth.login)
 router.post("/verifyotp", authMiddleware, auth.verifyOtp)
-
+router.get("/", authMiddleware, auth.getUser)
+router.get("/refreshtoken", auth.refreshAccessToken)
+router.get("/:id", authMiddleware, auth.getUserById)
 module.exports = router
