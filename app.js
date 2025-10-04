@@ -12,7 +12,7 @@ const connectDatabase = require("./config/database")
 //security middlewares
 app.use(cors({
     origin: "*",
-    methods: ["GET", "POST", "DELETE", "PUT"]
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"]
 }))
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000, 

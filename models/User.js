@@ -34,6 +34,10 @@ const schema = new mongoose.Schema({
         type: String,
         default: 'user'
     },
+    teamId : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "team"
+    },
     otp : {
         code : {
             type : Number
