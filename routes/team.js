@@ -13,6 +13,7 @@ router.route("/")
 
 //invite
 router.route("/:teamId/invite/:userId").post(authMiddleware,team.sendInvite)
+router.route("/:inviteId/respond").post(authMiddleware,team.respondInvite)
 
 
 module.exports = router
