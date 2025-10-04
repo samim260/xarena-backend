@@ -11,4 +11,8 @@ router.route("/")
 .delete(authMiddleware, team.deleteTeam)
 
 
+//invite
+router.route("/:teamId/invite/:userId").post(authMiddleware,team.sendInvite)
+
+
 module.exports = router

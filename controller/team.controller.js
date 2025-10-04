@@ -1,7 +1,8 @@
 const { createTeamSchema, updateTeamSchema } = require("../validations/team.validation")
 const TeamModel = require("../models/Team")
 const UserModal = require("../models/User")
-const { logger } = require("../helpers")
+const inviteModal = require("../models/Invite")
+const { logger,isInviteExpired } = require("../helpers")
 
 class Team {
     async createTeam(req, res) {
@@ -75,12 +76,50 @@ class Team {
             if (!team) {
                 return res.status(400).json({ success: false, error: true, message: "no team found" });
             }
-            res.json({ success: true, error: false, data : team })
+            res.json({ success: true, error: false, data: team })
         } catch (error) {
             logger.error("error ", error.message)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
+    async sendInvite(req, res) {
+        try {  
+            const teamId = req.params.teamId
+            const requestUserId = req.params.userId
+
+            const team = await TeamModel.findById(teamId);
+            if(!team || team.ownerId != req.user.id){
+                return res.status(400).json({ success: false, error: true, message: "you don't have permission to send invite" })
+            }
+
+            const user = await UserModal.findById(requestUserId);
+            if(!user){
+                return res.status(400).json({ success: false, error: true, message: "user doesnt exists" })
+            }
+            if(user.teamId){
+                return res.status(400).json({ success: false, error: true, message: "user is already in a team" })
+            }
+
+            const checkInvite = await inviteModal.findOne({teamId, userId : requestUserId ,status : "pending"})
+    
+            if(checkInvite && !isInviteExpired(checkInvite)){
+                return res.status(400).json({ success: false, error: true, message: "An active invite already exists for this user" })
+            }
+
+            const invite = await inviteModal.create({
+                userId : requestUserId,
+                teamId : teamId,
+                invitedBy : req.user.id,
+            })
+
+            res.json({ success: true, error: false, data: invite })
+        
+        } catch (error) {
+            logger.error("error ", error.message)
+            return res.status(500).json({ success: false, error: true, message: error.message })
+        }
+    }
+    
 }
 
 

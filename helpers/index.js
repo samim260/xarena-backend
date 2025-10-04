@@ -65,4 +65,9 @@ const sendMail = async (to,subject,html) => {
   const mail = await transporter.sendMail(mailOptions)
 }
 
-module.exports = { logger, generateJwtToken, decodeJwtToken, hashPassword, comparePassword, sendMail }
+function isInviteExpired(invite) {
+  if (!invite.expiresAt) return false; // no expiry set
+  return new Date() > invite.expiresAt;
+}
+
+module.exports = { logger, generateJwtToken, decodeJwtToken, hashPassword, comparePassword, sendMail, isInviteExpired }
