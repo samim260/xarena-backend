@@ -82,6 +82,31 @@ class Team {
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
+    async getTeamById(req,res){
+         try {
+            const teamId = req.params.teamId
+            const team = await TeamModel.findById(teamId);
+            if (!team) {
+                return res.status(400).json({ success: false, error: true, message: "no team found" });
+            }
+            res.json({ success: true, error: false, data: team })
+        } catch (error) {
+            logger.error("error ", error.message)
+            return res.status(500).json({ success: false, error: true, message: error.message })
+        }
+    }
+    async getAllTeam(req,res){
+         try {
+            const team = await TeamModel.find();
+            if (!team || team.length == 0) {
+                return res.status(400).json({ success: false, error: true, message: "no teams found" });
+            }
+            res.json({ success: true, error: false, data: team })
+        } catch (error) {
+            logger.error("error ", error.message)
+            return res.status(500).json({ success: false, error: true, message: error.message })
+        }
+    }
     async sendInvite(req, res) {
         try {
             const teamId = req.params.teamId
@@ -156,6 +181,19 @@ class Team {
                 return res.json({ success: true, error: false, message : "status updated to " + status })
             }
             return res.status(400).json({ success: false, error: true, message: "you are not allowed to updated invite status" })
+        } catch (error) {
+            logger.error("error ", error.message)
+            return res.status(500).json({ success: false, error: true, message: error.message })
+        }
+    }
+    async getInvite(req,res){
+        try {
+            const inviteId = req.params.inviteId
+            const invite = await inviteModal.findById(inviteId);
+            if(!invite){
+                return res.status(400).json({ success: false, error: true, message: "no invite found" })
+            }
+            res.json({ success: true, error: false, data: invite })
         } catch (error) {
             logger.error("error ", error.message)
             return res.status(500).json({ success: false, error: true, message: error.message })
