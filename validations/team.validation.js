@@ -9,16 +9,11 @@ const objectId = (value, helpers) => {
 };
 
 const createTeamSchema = Joi.object({
-  ownerId: Joi.string().custom(objectId).required(),
   name: Joi.string().trim().min(2).max(50).required(),
-
   tag: Joi.string().trim().max(10).required(),
-
   logo_url: Joi.string().uri().optional(),
   banner_url: Joi.string().uri().optional(),
-
   region: Joi.string().max(50).optional(),
-
   bio: Joi.string().max(500).optional()
 });
 
