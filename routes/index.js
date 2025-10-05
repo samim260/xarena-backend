@@ -10,5 +10,6 @@ router.get('/health', (req, res) => {
 })
 router.use("/user", require("./user"))
 router.use("/team", require("./team"))
+router.use("/invite", require("./invite"))
 
 module.exports = router

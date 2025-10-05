@@ -65,7 +65,7 @@ class User {
                 }
             })
         } catch (error) {
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
@@ -114,7 +114,7 @@ class User {
 
 
         } catch (error) {
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
@@ -134,7 +134,7 @@ class User {
             user.save();
             return res.json({ success: true, error: false })
         } catch (error) {
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
@@ -147,7 +147,7 @@ class User {
             }
             return res.json({ success: true, error: false, data: user })
         } catch (error) {
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
@@ -163,7 +163,7 @@ class User {
             }
             return res.json({ success: true, error: false, data: user })
         } catch (error) {
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
@@ -197,7 +197,7 @@ class User {
             return res.status(400).json({ success: false, error: true, message: "refresh token is not valid" })
         } catch (error) {
             console.log(error)
-            logger.error("error ", error.message)
+            logger.error(`error : ${error}`)
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }

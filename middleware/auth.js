@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
         }
         next()
     } catch (error) {
-        logger.error("error ", error.message)
+        logger.error(`error : ${error}`)
         return res.status(401).json({ success: false, error: true, message: "invaild access token" });
     }
 }

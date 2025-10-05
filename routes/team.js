@@ -4,21 +4,15 @@ const authMiddleware = require("../middleware/auth")
 
 const team = new Team()
 
+router.use(authMiddleware)
+
 router.route("/")
-.get(authMiddleware, team.getTeam)
-.post(authMiddleware,team.createTeam)
-.patch(authMiddleware, team.updateTeam)
-.delete(authMiddleware, team.deleteTeam)
+    .get(team.getTeam)
+    .post(team.createTeam)
+    .patch(team.updateTeam)
+    .delete(team.deleteTeam)
 
-router.route("/all").get(authMiddleware,team.getAllTeam)
-router.route("/:teamId").get(authMiddleware,team.getTeamById)
-
-
-//invite
-router.route("/:teamId/invite/:userId").post(authMiddleware,team.sendInvite)
-router.route("/:inviteId/respond").post(authMiddleware,team.respondInvite)
-router.route("/:inviteId/invite").get(authMiddleware, team.getInvite)
-
-
+router.route("/all").get(team.getAllTeam)
+router.route("/:teamId").get(team.getTeamById)
 
 module.exports = router
