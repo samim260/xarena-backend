@@ -13,6 +13,8 @@ router.route("/")
     .delete(team.deleteTeam)
 
 router.route("/all").get(team.getAllTeam)
+router.route("/leave").post(team.leaveTeam)
 router.route("/:teamId").get(team.getTeamById)
+router.route("/:userId/remove").post(team.removeTeamMember)
 
 module.exports = router

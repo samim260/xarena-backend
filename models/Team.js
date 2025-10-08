@@ -32,4 +32,4 @@ const TeamSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Team", TeamSchema);
+module.exports = mongoose.model("team", TeamSchema);

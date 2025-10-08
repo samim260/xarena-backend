@@ -108,6 +108,30 @@ class Team {
             return res.status(500).json({ success: false, error: true, message: error.message })
         }
     }
+    async removeTeamMember(req,res){
+
+    }
+    async leaveTeam(req,res){
+        const user = await UserModal.findById(req.user.id)
+        if(!user.teamId){
+            return res.status(400).json({ success: false, error: true, message: "You are not part of any team" });
+        }
+        const team = await TeamModel.findById(user.teamId);
+        if(!team){
+            user.teamId = null;
+            await user.save()
+            return res.status(400).json({ success: false, error: true, message: "You are not part of any team" });
+        }
+
+        if(team.ownerId == user.id && team.members.length > 1){
+            return res.status(400).json({ success: false, error: true, message: "please transfer the team ownership before leaving the team" });
+        }
+        user.teamId = null;
+        team.members.pull(user.id);
+        await user.save()
+        await team.save();
+        return res.status(200).json({ success: true, error: false});
+    }
 }
 
 
